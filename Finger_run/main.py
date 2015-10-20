@@ -1,6 +1,7 @@
 import Leap
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
+
 class SampleListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
@@ -122,6 +123,27 @@ class SampleListener(Leap.Listener):
 
         if not (frame.hands.is_empty and frame.gestures().is_empty):
             print ""
+'''
+Function to get the plot data of the hand
+@hand: the hand object that we want to process.
+'''
+def getHandPlotData (hand):
+    finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
+    bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
+
+    getHandPlotData.counter += 1
+    dataContainer = open('handData'+str(getHandPlotData.counter), 'w')
+
+    for finger in hand.fingers:
+        dataContainer.write("Data from %s \n" %finger_names[finger.type])
+        for b in range(0, 4):
+            bone = finger.bone(b)
+            dataContainer.write("Data from %s \n" %finger_names[bone.type])
+            dataContainer.write("Start: %s \n Final: %s \n", %(bone.prev_joint, bone.next_joint))            
+        dataContainer.write("_______________________________________ \n")
+
+
+getHandPlotData.counter = 0 # initialize getHandPlotData's static counter
 
 '''
 Function that detect the Run Gesture
@@ -134,18 +156,11 @@ def detectRunGesture(index, middle):
     index_tip_poss = index.tip_position
     middle_tip_poss = middle.tip_position
 
-
-
-class Gesture:
-    def __init__(self, func):
-        self.f = func
-
-    def execute(self):
-        self.f()
-
 def main():
-    runGesture = Gesture(detectRunGesture)
-    a.execute()
+    dataContainer = open('dummie','w')
+
+    a = [1,2,3]
+    dataContainer.write("Data from %s %s \n" %(a[1],a[2]))
 
     print "End"
 
