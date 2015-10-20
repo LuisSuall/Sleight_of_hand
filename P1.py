@@ -125,11 +125,15 @@ class SampleListener(Leap.Listener):
 
 '''
 Function that detect the Run Gesture
-@frame: frame to analyze
+@index: information from the middle finger in the frame
+@middle: information from the index finger in the frame
 '''
-def detectRunGesture(frame):
+def detectRunGesture(index, middle):
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
     #Then we need the position information about these fingers.
+    index_tip_poss = index.tip_position
+    middle_tip_poss = middle.tip_position
+
 
 
 class Gesture:
