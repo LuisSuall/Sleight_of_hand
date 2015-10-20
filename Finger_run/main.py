@@ -1,13 +1,36 @@
-import Leap
+import Leap, sys, thread, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
-
-class SampleListener(Leap.Listener):
+'''
+Function to get the plot data of the hand
+@hand: the hand object that we want to process.
+'''
+def getHandPlotData (hand):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
-    state_names = ['STATE_INVALID', 'STATE_START', 'STATE_UPDATE', 'STATE_END']
+
+    getHandPlotData.counter += 1
+    dataContainer = open('handData'+str(getHandPlotData.counter), 'w')
+
+    print "Storing hand data..."
+
+    for finger in hand.fingers:
+        dataContainer.write("Data from %s \n" %finger_names[finger.type])
+        for b in range(0, 4):
+            bone = finger.bone(b)
+            dataContainer.write("Data from %s \n" %bone_names[bone.type])
+            dataContainer.write("Start: %s \n Final: %s \n" %(bone.prev_joint, bone.next_joint))
+        dataContainer.write("_______________________________________ \n")
+
+    print "Storage complete."
+
+
+getHandPlotData.counter = 0 # initialize getHandPlotData's static counter
+
+class SampleListener(Leap.Listener):
 
     def on_init(self, controller):
+        self.sem = 0
         print "Initialized"
 
     def on_connect(self, controller):
@@ -26,124 +49,15 @@ class SampleListener(Leap.Listener):
     def on_exit(self, controller):
         print "Exited"
 
+    def turnOn (self):
+        self.sem = 1
+
     def on_frame(self, controller):
-        # Get the most recent frame and report some basic information
         frame = controller.frame()
-
-        print "Frame id: %d, timestamp: %d, hands: %d, fingers: %d, tools: %d, gestures: %d" % (
-              frame.id, frame.timestamp, len(frame.hands), len(frame.fingers), len(frame.tools), len(frame.gestures()))
-
-        # Get hands
         for hand in frame.hands:
-
-            handType = "Left hand" if hand.is_left else "Right hand"
-
-            print "  %s, id %d, position: %s" % (
-                handType, hand.id, hand.palm_position)
-
-            # Get the hand's normal vector and direction
-            normal = hand.palm_normal
-            direction = hand.direction
-
-            # Calculate the hand's pitch, roll, and yaw angles
-            print "  pitch: %f degrees, roll: %f degrees, yaw: %f degrees" % (
-                direction.pitch * Leap.RAD_TO_DEG,
-                normal.roll * Leap.RAD_TO_DEG,
-                direction.yaw * Leap.RAD_TO_DEG)
-
-            # Get arm bone
-            arm = hand.arm
-            print "  Arm direction: %s, wrist position: %s, elbow position: %s" % (
-                arm.direction,
-                arm.wrist_position,
-                arm.elbow_position)
-
-            # Get fingers
-            for finger in hand.fingers:
-
-                print "    %s finger, id: %d, length: %fmm, width: %fmm" % (
-                    self.finger_names[finger.type],
-                    finger.id,
-                    finger.length,
-                    finger.width)
-
-                # Get bones
-                for b in range(0, 4):
-                    bone = finger.bone(b)
-                    print "      Bone: %s, start: %s, end: %s, direction: %s" % (
-                        self.bone_names[bone.type],
-                        bone.prev_joint,
-                        bone.next_joint,
-                        bone.direction)
-
-        # Get tools
-        for tool in frame.tools:
-
-            print "  Tool id: %d, position: %s, direction: %s" % (
-                tool.id, tool.tip_position, tool.direction)
-
-        # Get gestures
-        for gesture in frame.gestures():
-            if gesture.type == Leap.Gesture.TYPE_CIRCLE:
-                circle = CircleGesture(gesture)
-
-                # Determine clock direction using the angle between the pointable and the circle normal
-                if circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2:
-                    clockwiseness = "clockwise"
-                else:
-                    clockwiseness = "counterclockwise"
-
-                # Calculate the angle swept since the last frame
-                swept_angle = 0
-                if circle.state != Leap.Gesture.STATE_START:
-                    previous_update = CircleGesture(controller.frame(1).gesture(circle.id))
-                    swept_angle =  (circle.progress - previous_update.progress) * 2 * Leap.PI
-
-                print "  Circle id: %d, %s, progress: %f, radius: %f, angle: %f degrees, %s" % (
-                        gesture.id, self.state_names[gesture.state],
-                        circle.progress, circle.radius, swept_angle * Leap.RAD_TO_DEG, clockwiseness)
-
-            if gesture.type == Leap.Gesture.TYPE_SWIPE:
-                swipe = SwipeGesture(gesture)
-                print "  Swipe id: %d, state: %s, position: %s, direction: %s, speed: %f" % (
-                        gesture.id, self.state_names[gesture.state],
-                        swipe.position, swipe.direction, swipe.speed)
-
-            if gesture.type == Leap.Gesture.TYPE_KEY_TAP:
-                keytap = KeyTapGesture(gesture)
-                print "  Key Tap id: %d, %s, position: %s, direction: %s" % (
-                        gesture.id, self.state_names[gesture.state],
-                        keytap.position, keytap.direction )
-
-            if gesture.type == Leap.Gesture.TYPE_SCREEN_TAP:
-                screentap = ScreenTapGesture(gesture)
-                print "  Screen Tap id: %d, %s, position: %s, direction: %s" % (
-                        gesture.id, self.state_names[gesture.state],
-                        screentap.position, screentap.direction )
-
-        if not (frame.hands.is_empty and frame.gestures().is_empty):
-            print ""
-'''
-Function to get the plot data of the hand
-@hand: the hand object that we want to process.
-'''
-def getHandPlotData (hand):
-    finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
-    bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
-
-    getHandPlotData.counter += 1
-    dataContainer = open('handData'+str(getHandPlotData.counter), 'w')
-
-    for finger in hand.fingers:
-        dataContainer.write("Data from %s \n" %finger_names[finger.type])
-        for b in range(0, 4):
-            bone = finger.bone(b)
-            dataContainer.write("Data from %s \n" %finger_names[bone.type])
-            dataContainer.write("Start: %s \n Final: %s \n", %(bone.prev_joint, bone.next_joint))            
-        dataContainer.write("_______________________________________ \n")
-
-
-getHandPlotData.counter = 0 # initialize getHandPlotData's static counter
+            if (self.sem == 1):
+                getHandPlotData(hand)
+                self.sem = 0
 
 '''
 Function that detect the Run Gesture
@@ -157,12 +71,37 @@ def detectRunGesture(index, middle):
     middle_tip_poss = middle.tip_position
 
 def main():
-    dataContainer = open('dummie','w')
+    # Create a sample listener and controller
+    listener = SampleListener()
+    controller = Leap.Controller()
 
-    a = [1,2,3]
-    dataContainer.write("Data from %s %s \n" %(a[1],a[2]))
+    # Have the sample listener receive events from the controller
+    controller.add_listener(listener)
 
-    print "End"
+    # Select when to take the photo
+    continueV = 'Y'
+
+    while continueV == 'Y':
+        print "Press Enter to take photo..."
+        try:
+            sys.stdin.readline()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            listener.turnOn()
+
+        continueV = raw_input("Do you want take another photo? Y/N: ")
+
+
+    # Keep this process running until Enter is pressed
+    print "Press Enter to quit..."
+    try:
+        sys.stdin.readline()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Remove the sample listener when done
+        controller.remove_listener(listener)
 
 if __name__ == '__main__':
     main()
