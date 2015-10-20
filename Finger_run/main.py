@@ -67,8 +67,8 @@ Function that detect the Run Gesture
 def detectRunGesture(index, middle):
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
     #Then we need the position information about these fingers.
-    index_tip_poss = index.tip_position
-    middle_tip_poss = middle.tip_position
+    index_tip_pos = index.tip_position
+    middle_tip_pos = middle.tip_position
 
 def main():
     # Create a sample listener and controller
