@@ -1,63 +1,31 @@
 import Leap, sys, thread, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
-'''
-Function to get the plot data of the hand
-@hand: the hand object that we want to process.
-'''
-def getHandPlotData (hand):
-    finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
-    bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
+class Photographer(Leap.Listener):
 
-    getHandPlotData.counter += 1
-    dataContainer = open('handData'+str(getHandPlotData.counter), 'w')
+    def turnOnCamera():
+        photo_name = raw_input("Insert photo's basis name, please: ")
+        takePhoto(photo_name)
 
-    print "Storing hand data..."
-
-    for finger in hand.fingers:
-        dataContainer.write("Data from %s \n" %finger_names[finger.type])
-        for b in range(0, 4):
-            bone = finger.bone(b)
-            dataContainer.write("Data from %s \n" %bone_names[bone.type])
-            dataContainer.write("Start: %s \n Final: %s \n" %(bone.prev_joint, bone.next_joint))
-        dataContainer.write("_______________________________________ \n")
-
-    print "Storage complete."
-
-
-getHandPlotData.counter = 0 # initialize getHandPlotData's static counter
-
-class SampleListener(Leap.Listener):
-
-    def on_init(self, controller):
-        self.sem = 0
-        print "Initialized"
-
-    def on_connect(self, controller):
-        print "Connected"
-
-        # Enable gestures
-        controller.enable_gesture(Leap.Gesture.TYPE_CIRCLE);
-        controller.enable_gesture(Leap.Gesture.TYPE_KEY_TAP);
-        controller.enable_gesture(Leap.Gesture.TYPE_SCREEN_TAP);
-        controller.enable_gesture(Leap.Gesture.TYPE_SWIPE);
-
-    def on_disconnect(self, controller):
-        # Note: not dispatched when running in a debugger.
-        print "Disconnected"
-
-    def on_exit(self, controller):
-        print "Exited"
-
-    def turnOn (self):
-        self.sem = 1
-
-    def on_frame(self, controller):
+    def takePhoto(photo_name):
         frame = controller.frame()
+        finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
+        bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
+
         for hand in frame.hands:
-            if (self.sem == 1):
-                getHandPlotData(hand)
-                self.sem = 0
+            dataContainer = open(photoName+str(hand.id), 'w')
+
+            print "Storing hand data..."
+
+            for finger in hand.fingers:
+                dataContainer.write("Data from %s \n" %finger_names[finger.type])
+                for b in range(0, 4):
+                    bone = finger.bone(b)
+                    dataContainer.write("Data from %s \n" %bone_names[bone.type])
+                    dataContainer.write("Start: %s \n Final: %s \n" %(bone.prev_joint, bone.next_joint))
+                dataContainer.write("_______________________________________ \n")
+
+            print "Storage complete."
 
 '''
 Function that detect the Run Gesture
@@ -72,11 +40,11 @@ def detectRunGesture(index, middle):
 
 def main():
     # Create a sample listener and controller
-    listener = SampleListener()
+    photographer = Photographer()
     controller = Leap.Controller()
 
     # Have the sample listener receive events from the controller
-    controller.add_listener(listener)
+    controller.add_listener(photographer)
 
     # Select when to take the photo
     continueV = 'Y'
@@ -88,7 +56,7 @@ def main():
         except KeyboardInterrupt:
             pass
         finally:
-            listener.turnOn()
+            photographer.turnOnCamera()
 
         continueV = raw_input("Do you want take another photo? Y/N: ")
 
