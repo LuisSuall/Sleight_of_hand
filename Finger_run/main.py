@@ -5,7 +5,14 @@ class Photographer(Leap.Listener):
 
     def turnOnCamera():
         photo_name = raw_input("Insert photo's basis name, please: ")
-        takePhoto(photo_name)
+
+        print "Press Enter to take photo..."
+        try:
+            sys.stdin.readline()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            takePhoto(photo_name)
 
     def takePhoto(photo_name):
         frame = controller.frame()
@@ -50,14 +57,7 @@ def main():
     continueV = 'Y'
 
     while continueV == 'Y':
-        print "Press Enter to take photo..."
-        try:
-            sys.stdin.readline()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            photographer.turnOnCamera()
-
+        photographer.turnOnCamera()
         continueV = raw_input("Do you want take another photo? Y/N: ")
 
 
