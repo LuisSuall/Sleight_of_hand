@@ -1,5 +1,25 @@
-import Leap, sys, thread, time
+import Leap, sys, thread, time, math
+from math import *
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
+
+palm_orientations = ['up', 'down', 'right', 'left']
+
+'''
+Function that returns the orientation of the hand's palm.
+@hand: the hand that we want to get its palm orientation
+'''
+def palmOrientation (hand):
+    palmNomal = hand.palmNomal
+
+    #We have divided the unit sphere in four quadrants
+    if cos(math.pi/4) <= y and y <= 1:
+        return palm_orientations[0]
+    elif -1 <= y and y <= cos(3*math.pi/4):
+        return palm_orientations[1]
+    elif x > 0:
+        return palm_orientations[2]
+    else:
+        return palm_orientations[3]
 
 class Photographer(Leap.Listener):
 
@@ -38,12 +58,15 @@ class Photographer(Leap.Listener):
 Function that detect the Run Gesture
 @index: information from the middle finger in the frame
 @middle: information from the index finger in the frame
+@middle:
 '''
-def detectRunGesture(index, middle):
+def detectRunGesture(index, middle, prevSign):
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
     #Then we need the position information about these fingers.
-    index_tip_pos = index.tip_position
-    middle_tip_pos = middle.tip_position
+    index_tip_pos = index.tipPosition
+    middle_tip_pos = middle.tipPosition
+
+    diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1] #We compare the Y coordenates of the tips.
 
 def main():
     # Create a sample listener and controller
@@ -54,6 +77,7 @@ def main():
     controller.add_listener(photographer)
 
     # Select when to take the photo
+
     continueV = 'Y'
 
     while continueV == 'Y':
@@ -69,7 +93,7 @@ def main():
         pass
     finally:
         # Remove the sample listener when done
-        controller.remove_listener(listener)
+        controller.remove_listener(photographer)
 
 if __name__ == '__main__':
     main()
