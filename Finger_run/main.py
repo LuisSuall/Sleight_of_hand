@@ -9,8 +9,9 @@ Function that returns the orientation of the hand's palm.
 @hand: the hand that we want to get its palm orientation
 '''
 def palmOrientation (hand):
-    palmNomal = hand.palmNomal
+    palmNormal = hand.palm_normal
     y = palmNormal[1]
+    x = palmNormal[0]
 
     #We have divided the unit sphere in four quadrants
     if cos(math.pi/4) <= y and y <= 1:
@@ -62,21 +63,25 @@ Function that detect the Run Gesture
 @middle:
 '''
 def detectRunGesture(hand):
-    index = hand.indexFinger
-    middle = hand.middleFinger
+    for finger in hand.fingers:
+        if finger.type == 1:
+            index = finger
+        elif finger.type == 2:
+            middle = finger
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
     #Then we need the position information about these fingers.
-    index_tip_pos = index.tipPosition
-    middle_tip_pos = middle.tipPosition
+    index_tip_pos = index.bone(3).next_joint
+    middle_tip_pos = middle.bone(3).next_joint
 
     diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1] #We compare the Y coordenates of the tips.
 
     #We check the palm orientation and we want a minimum distance between the two fingers.
     if detectRunGesture.sign*diffBtwTipsY <= -30 and palmOrientation(hand) == 'down':
-        copysign(detectRunGesture.sign, diffBtwTipsY)
-        return true
-    else
-        return false
+        detectRunGesture.sign = copysign(1, diffBtwTipsY)
+        print ('El signo de la variable global es ' + str(detectRunGesture.sign))
+        return True
+    else:
+        return False
 
 detectRunGesture.sign = -1
 
@@ -95,7 +100,15 @@ def main():
     continueV = 'Y'
 
     while continueV == 'Y':
-        photographer.turnOnCamera()
+        #photographer.turnOnCamera()
+        frame = controller.frame()
+
+        for i, hand in enumerate(frame.hands):
+            if detectRunGesture(hand):
+                print ('Has dado un paso')
+            else:
+                print ('Estas parado')
+
         continueV = raw_input("Do you want take another photo? Y/N: ")
 
 
