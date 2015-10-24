@@ -10,6 +10,7 @@ Function that returns the orientation of the hand's palm.
 '''
 def palmOrientation (hand):
     palmNomal = hand.palmNomal
+    y = palmNormal[1]
 
     #We have divided the unit sphere in four quadrants
     if cos(math.pi/4) <= y and y <= 1:
@@ -60,13 +61,26 @@ Function that detect the Run Gesture
 @middle: information from the index finger in the frame
 @middle:
 '''
-def detectRunGesture(index, middle, prevSign):
+def detectRunGesture(hand):
+    index = hand.indexFinger
+    middle = hand.middleFinger
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
     #Then we need the position information about these fingers.
     index_tip_pos = index.tipPosition
     middle_tip_pos = middle.tipPosition
 
     diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1] #We compare the Y coordenates of the tips.
+
+    #We check the palm orientation and we want a minimum distance between the two fingers.
+    if detectRunGesture.sign*diffBtwTipsY <= -30 and palmOrientation(hand) == 'down':
+        copysign(detectRunGesture.sign, diffBtwTipsY)
+        return true
+    else
+        return false
+
+detectRunGesture.sign = -1
+
+
 
 def main():
     # Create a sample listener and controller
