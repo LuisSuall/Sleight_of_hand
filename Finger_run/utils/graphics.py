@@ -1,7 +1,10 @@
 import OpenGL
 from OpenGL.GLUT import *
 from OpenGL.GL import *
-import sys
+import sys, math, os
+from math import *
+import pygame
+import gesture
 
 camera_angle_x = 0
 
@@ -11,9 +14,11 @@ window_width = 1024
 window_height= 800
 
 frustum_near = 100
-frustum_far = 1000
+frustum_far = 500
 frustum_width = 150
 frustum_height = frustum_width * ((window_height*1.0) / window_width)
+
+steps = 0
 
 def setProjection ():
     glMatrixMode(GL_PROJECTION)
@@ -23,7 +28,7 @@ def setProjection ():
     glFrustum(-frustum_width,frustum_width,-frustum_height,frustum_height, frustum_near, frustum_far) 
 
     # Center frustum
-    glTranslatef(0.0,-500.0,-0.50*(frustum_far+frustum_near))
+    glTranslatef(0.0,-300.0,-0.50*(frustum_far+frustum_near))
 
 def setViewport ():
 	glViewport(0,0,window_width, window_height)
@@ -143,8 +148,19 @@ def drawHands(hands):
 		glColor3f(1.0,1.0,1.0)
 		drawHand(hand)
 
-def drawTexts():
-	pass
+def drawTexts(text):
+	#glPolygonMode( GL_FRONT_AND_BACK, GL_FILL )
+	glPushMatrix()
+	glLoadIdentity()
+
+	glColor3f(1.0,1.0,0.0)
+	glRasterPos2f( 250.0,0 )
+	glScalef(20.0,20.0,20.0)
+
+	for letter in text:
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ord(letter))
+
+	glPopMatrix()
 
 def drawPredefinedHands():
 	pass
@@ -156,12 +172,18 @@ def draw():
 	setProjection()
 	setCamera()
 
+	global steps
+
 	frame = controller.frame()
 
-	drawAxis()
+	for hand in frame.hands:
+		if gesture.detectRunGesture(hand):
+			steps = steps + 1
+
+	#drawAxis()
 	drawLeap()
 	drawHands(frame.hands)
-	drawTexts()
+	drawTexts(str(steps))
 	drawPredefinedHands()
 
 	glutSwapBuffers()
@@ -201,9 +223,14 @@ def initOpenGL():
 	setCamera()
 
 def init(arguments, newController):
-	global controller	
+	global controller
+	controller = newController
+
+	pygame.mixer.init()
+	pygame.mixer.music.load(os.path.abspath('utils/epic_music.mp3'))
+	pygame.mixer.music.play(-1)
+
 	initGlut(arguments)
 	initOpenGL()
-	controller = newController
 
 	glutMainLoop()

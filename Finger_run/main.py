@@ -1,27 +1,7 @@
 import Leap, sys, thread, time, math
 from math import *
+import utils.graphics as graphics
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
-
-palm_orientations = ['up', 'down', 'right', 'left']
-
-'''
-Function that returns the orientation of the hand's palm.
-@hand: the hand that we want to get its palm orientation
-'''
-def palmOrientation (hand):
-    palmNormal = hand.palm_normal
-    y = palmNormal[1]
-    x = palmNormal[0]
-
-    #We have divided the unit sphere in four quadrants
-    if cos(math.pi/4) <= y and y <= 1:
-        return palm_orientations[0]
-    elif -1 <= y and y <= cos(3*math.pi/4):
-        return palm_orientations[1]
-    elif x > 0:
-        return palm_orientations[2]
-    else:
-        return palm_orientations[3]
 
 class Photographer(Leap.Listener):
 
@@ -56,71 +36,12 @@ class Photographer(Leap.Listener):
 
             print "Storage complete."
 
-'''
-Function that detect the Run Gesture
-@index: information from the middle finger in the frame
-@middle: information from the index finger in the frame
-@middle:
-'''
-def detectRunGesture(hand):
-    for finger in hand.fingers:
-        if finger.type == 1:
-            index = finger
-        elif finger.type == 2:
-            middle = finger
-    #We use the index and the middle finger like two legs and we're going to simulate de run action.
-    #Then we need the position information about these fingers.
-    index_tip_pos = index.bone(3).next_joint
-    middle_tip_pos = middle.bone(3).next_joint
+def main(arguments):
 
-    diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1] #We compare the Y coordenates of the tips.
-
-    #We check the palm orientation and we want a minimum distance between the two fingers.
-    if detectRunGesture.sign*diffBtwTipsY <= -30 and palmOrientation(hand) == 'down':
-        detectRunGesture.sign = copysign(1, diffBtwTipsY)
-        print ('El signo de la variable global es ' + str(detectRunGesture.sign))
-        return True
-    else:
-        return False
-
-detectRunGesture.sign = -1
-
-
-
-def main():
-    # Create a sample listener and controller
-    photographer = Photographer()
     controller = Leap.Controller()
 
-    # Have the sample listener receive events from the controller
-    controller.add_listener(photographer)
+    graphics.init(arguments, controller)
 
-    # Select when to take the photo
-
-    continueV = 'Y'
-
-    while continueV == 'Y':
-        #photographer.turnOnCamera()
-        frame = controller.frame()
-
-        for i, hand in enumerate(frame.hands):
-            if detectRunGesture(hand):
-                print ('Has dado un paso')
-            else:
-                print ('Estas parado')
-
-        continueV = raw_input("Do you want take another photo? Y/N: ")
-
-
-    # Keep this process running until Enter is pressed
-    print "Press Enter to quit..."
-    try:
-        sys.stdin.readline()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        # Remove the sample listener when done
-        controller.remove_listener(photographer)
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
