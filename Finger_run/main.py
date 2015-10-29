@@ -38,9 +38,14 @@ class Photographer(Leap.Listener):
 
 def main(arguments):
 
-    controller = Leap.Controller()
+	tolerance = 10
 
-    graphics.init(arguments, controller)
+	if (len(arguments) == 2):
+		tolerance = int(arguments[1])
+
+	controller = Leap.Controller()
+
+	graphics.init(arguments, controller, tolerance)
 
 if __name__ == '__main__':
-    main(sys.argv)
+	main(sys.argv)

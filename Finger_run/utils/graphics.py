@@ -180,11 +180,11 @@ def draw():
 	if running:
 		for hand in frame.hands:
 
-			if gesture.detectRunGesture(hand):
+			if gesture.detectRunGesture(hand, tolerance):
 				steps = steps + 1
 	else:
 		for hand in frame.hands:
-			if gesture.detectOKGesture(hand) == 1:
+			if gesture.detectOKGesture(hand, tolerance):
 				running = True
 				pygame.mixer.music.play(-1)
 
@@ -231,9 +231,12 @@ def initOpenGL():
 	setProjection()
 	setCamera()
 
-def init(arguments, newController):
+def init(arguments, newController, newTolerance):
 	global controller
 	controller = newController
+
+	global tolerance
+	tolerance = newTolerance
 
 	pygame.init()
 	img = pygame.image.load(os.path.abspath('utils/images/tutorial1.jpg'))
@@ -245,10 +248,10 @@ def init(arguments, newController):
 	screen.blit(img,(0,0))
 	time.sleep(10)
 	pygame.display.flip()
-	
+
 	img = pygame.image.load(os.path.abspath('utils/images/tutorial3.jpg'))
 	screen.blit(img,(0,0))
-	
+
 	waitingOk = True
 
 
@@ -258,7 +261,7 @@ def init(arguments, newController):
 
 		for hand in frame.hands:
 
-			if gesture.detectOKGesture(hand) == 1:
+			if gesture.detectOKGesture(hand, tolerance) == 1:
 				waitingOk = False
 
 	pygame.display.flip()

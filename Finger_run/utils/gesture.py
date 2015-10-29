@@ -3,7 +3,10 @@ from extendedHand import *
 import math
 from math import *
 
-def detectRunGesture(hand):
+def percentage(whole, percent):
+	return (whole * percent) / 100.0
+
+def detectRunGesture(hand, tolerance):
     index = getFinger(hand, 'index')
     middle = getFinger(hand, 'middle')
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
@@ -14,7 +17,7 @@ def detectRunGesture(hand):
     diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1] #We compare the Y coordenates of the tips.
 
     #We check the palm orientation and we want a minimum distance between the two fingers.
-    if detectRunGesture.sign*diffBtwTipsY <= -30 and palmOrientation(hand) == 'down':
+    if detectRunGesture.sign*diffBtwTipsY <= (-30 + percentage(-30, tolerance)) and palmOrientation(hand) == 'down':
         detectRunGesture.sign = copysign(1, diffBtwTipsY)
         return True
     else:
@@ -22,7 +25,7 @@ def detectRunGesture(hand):
 
 detectRunGesture.sign = -1
 
-def detectOKGesture(hand):
+def detectOKGesture(hand, tolerance):
 	thumb = getFinger(hand, 'thumb')
 	index = getFinger(hand, 'index')
 
@@ -31,9 +34,7 @@ def detectOKGesture(hand):
 
 	distanceBtwTips = sqrt(pow(thumb_tip_pos[0]-index_tip_pos[0],2) + pow(thumb_tip_pos[1]-index_tip_pos[1],2) + pow(thumb_tip_pos[2]-index_tip_pos[2],2))
 
-	if distanceBtwTips < 30 and palmOrientation(hand) == 'down':
-		return 1
-	elif palmOrientation(hand) != "down":
-		return 0
+	if distanceBtwTips < (60 + percentage(60, tolerance)) and palmOrientation(hand) == 'down':
+		return True
 	else:
-		return 2
+		return False
