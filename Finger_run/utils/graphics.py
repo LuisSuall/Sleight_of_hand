@@ -1,4 +1,5 @@
 import OpenGL
+import time
 from OpenGL.GLUT import *
 from OpenGL.GL import *
 import sys, math, os
@@ -19,6 +20,7 @@ frustum_width = 150
 frustum_height = frustum_width * ((window_height*1.0) / window_width)
 
 steps = 0
+running = False
 
 def setProjection ():
     glMatrixMode(GL_PROJECTION)
@@ -38,7 +40,6 @@ def setCamera ():
 	glLoadIdentity()
 
 	glRotatef(camera_angle_x,1.0,0,0)
-
 
 def drawAxis():
 	long_ejes = 300.0
@@ -172,21 +173,20 @@ def draw():
 	setProjection()
 	setCamera()
 
-	global steps
+	global steps, running
 
 	frame = controller.frame()
 
-	for hand in frame.hands:
+	if running:
+		for hand in frame.hands:
 
-		if gesture.detectRunGesture(hand):
-			steps = steps + 1
-
-		if gesture.detectOKGesture(hand) == 1:
-			print "OK"
-		elif gesture.detectOKGesture(hand) == 0:
-			print "NO ORIENTACION"
-		else:
-			print "NO DISTANCIA"
+			if gesture.detectRunGesture(hand):
+				steps = steps + 1
+	else:
+		for hand in frame.hands:
+			if gesture.detectOKGesture(hand) == 1:
+				running = True
+				pygame.mixer.music.play(-1)
 
 
 	#drawAxis()
@@ -235,9 +235,40 @@ def init(arguments, newController):
 	global controller
 	controller = newController
 
+	pygame.init()
+	img = pygame.image.load(os.path.abspath('utils/images/tutorial1.jpg'))
+	screen = pygame.display.set_mode((1024,800))
+	screen.blit(img,(0,0))
+	pygame.display.flip()
+
+	img = pygame.image.load(os.path.abspath('utils/images/tutorial2.jpg'))
+	screen.blit(img,(0,0))
+	time.sleep(10)
+	pygame.display.flip()
+	
+	img = pygame.image.load(os.path.abspath('utils/images/tutorial3.jpg'))
+	screen.blit(img,(0,0))
+	
+	waitingOk = True
+
+
+	while waitingOk:
+		time.sleep(0.02)
+		frame = controller.frame()
+
+		for hand in frame.hands:
+
+			if gesture.detectOKGesture(hand) == 1:
+				waitingOk = False
+
+	pygame.display.flip()
+
+	time.sleep(3)
+
+	pygame.display.quit()
+
 	pygame.mixer.init()
 	pygame.mixer.music.load(os.path.abspath('utils/epic_music.mp3'))
-	pygame.mixer.music.play(-1)
 
 	initGlut(arguments)
 	initOpenGL()
