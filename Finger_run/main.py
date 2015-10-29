@@ -42,6 +42,5 @@ def main(arguments):
 
     graphics.init(arguments, controller)
 
-
 if __name__ == '__main__':
     main(sys.argv)

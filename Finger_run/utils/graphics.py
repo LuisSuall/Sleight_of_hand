@@ -22,10 +22,10 @@ steps = 0
 
 def setProjection ():
     glMatrixMode(GL_PROJECTION)
-    glLoadIdentity() 
+    glLoadIdentity()
 
     # Create frustum
-    glFrustum(-frustum_width,frustum_width,-frustum_height,frustum_height, frustum_near, frustum_far) 
+    glFrustum(-frustum_width,frustum_width,-frustum_height,frustum_height, frustum_near, frustum_far)
 
     # Center frustum
     glTranslatef(0.0,-300.0,-0.50*(frustum_far+frustum_near))
@@ -71,7 +71,7 @@ def drawLeap():
 
 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL )
-	
+
 	glBegin(GL_QUADS)
 
 	glColor3f( 0.0, 0.0, 0.0 )
@@ -177,8 +177,17 @@ def draw():
 	frame = controller.frame()
 
 	for hand in frame.hands:
+
 		if gesture.detectRunGesture(hand):
 			steps = steps + 1
+
+		if gesture.detectOKGesture(hand) == 1:
+			print "OK"
+		elif gesture.detectOKGesture(hand) == 0:
+			print "NO ORIENTACION"
+		else:
+			print "NO DISTANCIA"
+
 
 	#drawAxis()
 	drawLeap()

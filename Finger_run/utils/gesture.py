@@ -1,27 +1,11 @@
+import extendedHand
+from extendedHand import *
 import math
 from math import *
 
-def palmOrientation (hand):
-    palmNormal = hand.palm_normal
-    y = palmNormal[1]
-    x = palmNormal[0]
-
-    #We have divided the unit sphere in four quadrants
-    if cos(math.pi/4) <= y and y <= 1:
-        return 'up'
-    elif -1 <= y and y <= cos(3*math.pi/4):
-        return 'down'
-    elif x > 0:
-        return 'right'
-    else:
-        return 'left'
-
 def detectRunGesture(hand):
-    for finger in hand.fingers:
-        if finger.type == 1:
-            index = finger
-        elif finger.type == 2:
-            middle = finger
+    index = getFinger(hand, 'index')
+    middle = getFinger(hand, 'middle')
     #We use the index and the middle finger like two legs and we're going to simulate de run action.
     #Then we need the position information about these fingers.
     index_tip_pos = index.bone(3).next_joint
@@ -37,3 +21,19 @@ def detectRunGesture(hand):
         return False
 
 detectRunGesture.sign = -1
+
+def detectOKGesture(hand):
+	thumb = getFinger(hand, 'thumb')
+	index = getFinger(hand, 'index')
+
+	thumb_tip_pos = thumb.bone(3).next_joint
+	index_tip_pos = index.bone(3).next_joint
+
+	distanceBtwTips = sqrt(pow(thumb_tip_pos[0]-index_tip_pos[0],2) + pow(thumb_tip_pos[1]-index_tip_pos[1],2) + pow(thumb_tip_pos[2]-index_tip_pos[2],2))
+
+	if distanceBtwTips < 30 and palmOrientation(hand) == 'down':
+		return 1
+	elif palmOrientation(hand) != "down":
+		return 0
+	else:
+		return 2
