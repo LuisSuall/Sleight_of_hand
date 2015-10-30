@@ -57,7 +57,7 @@ def detectOKGesture(hand, tolerance):
 	distanceBtwTips = sqrt(pow(thumb_tip_pos[0]-index_tip_pos[0],2) + pow(thumb_tip_pos[1]-index_tip_pos[1],2) + pow(thumb_tip_pos[2]-index_tip_pos[2],2))
 	
 	#We check the palm orientation and the distance between tips.
-	if distanceBtwTips < (50 + percentage(50, tolerance)) and palmOrientation(hand) == 'down':
+	if distanceBtwTips < (30 + percentage(30, tolerance)) and palmOrientation(hand) == 'down':
 		return True
 	else:
 		return False
