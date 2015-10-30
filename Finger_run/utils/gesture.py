@@ -17,7 +17,7 @@ def detectRunGesture(hand, tolerance):
     diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1] #We compare the Y coordenates of the tips.
 
     #We check the palm orientation and we want a minimum distance between the two fingers.
-    if detectRunGesture.sign*diffBtwTipsY <= (-30 + percentage(-30, tolerance)) and palmOrientation(hand) == 'down':
+    if detectRunGesture.sign*diffBtwTipsY <= (-30 + percentage(30, tolerance)) and palmOrientation(hand) == 'down':
         detectRunGesture.sign = copysign(1, diffBtwTipsY)
         return True
     else:
