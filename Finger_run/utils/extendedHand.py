@@ -13,7 +13,7 @@ def palmOrientation (hand):
     y = palmNormal[1]
     x = palmNormal[0]
 
-    #We have divided the unit sphere in four quadrants and we check the palm_normal quadrant
+    #We have divided the unit sphere in four quadrants and we check the palm_normal's quadrant
     if cos(math.pi/4) <= y and y <= 1:
         return 'up'
     elif -1 <= y and y <= cos(3*math.pi/4):
