@@ -24,10 +24,10 @@ def detectRunGesture(hand, tolerance):
     index_tip_pos = index.bone(3).next_joint
     middle_tip_pos = middle.bone(3).next_joint
 	 
-	 '''
-	 We calculate the signed difference between the Y coordenates.
-	 We use the sign to check that the fingers have been moved.
-	 '''
+	
+	#We calculate the signed difference between the Y coordenates.
+	#We use the sign to check that the fingers have been moved.
+	
     diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1]
 
     #We check the palm orientation and we want a minimum distance between the two fingers.
@@ -46,16 +46,16 @@ Function that detects the OK gesture.
 '''
 def detectOKGesture(hand, tolerance):
 	#We use the index finger and the thumb so we need the position information about these fingers.
-   thumb = getFinger(hand, 'thumb')
+	thumb = getFinger(hand, 'thumb')
 	index = getFinger(hand, 'index')
-	
+
 	#We get the tips position of the two fingers.
 	thumb_tip_pos = thumb.bone(3).next_joint
 	index_tip_pos = index.bone(3).next_joint
 
 	#We calculate the distance between the tips.
 	distanceBtwTips = sqrt(pow(thumb_tip_pos[0]-index_tip_pos[0],2) + pow(thumb_tip_pos[1]-index_tip_pos[1],2) + pow(thumb_tip_pos[2]-index_tip_pos[2],2))
-	
+
 	#We check the palm orientation and the distance between tips.
 	if distanceBtwTips < (30 + percentage(30, tolerance)) and palmOrientation(hand) == 'down':
 		return True

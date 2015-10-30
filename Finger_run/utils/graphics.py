@@ -7,6 +7,9 @@ from math import *
 import pygame
 import gesture
 
+'''
+Values to configure OpenGL
+'''
 camera_angle_x = 0
 
 window_pos_x = 50
@@ -19,9 +22,16 @@ frustum_far = 500
 frustum_width = 150
 frustum_height = frustum_width * ((window_height*1.0) / window_width)
 
+'''
+Values to track game status
+'''
 steps = 0
 running = False
 
+
+'''
+Function that sets the projection
+'''
 def setProjection ():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -32,15 +42,24 @@ def setProjection ():
     # Center frustum
     glTranslatef(0.0,-300.0,-0.50*(frustum_far+frustum_near))
 
+'''
+Function that sets the window
+'''
 def setViewport ():
 	glViewport(0,0,window_width, window_height)
 
+'''
+Function that sets the camera
+'''
 def setCamera ():
 	glMatrixMode(GL_MODELVIEW)
 	glLoadIdentity()
 
 	glRotatef(camera_angle_x,1.0,0,0)
 
+'''
+Auxiliary function to draw the axis to help with debugging
+'''
 def drawAxis():
 	long_ejes = 300.0
 
@@ -64,6 +83,10 @@ def drawAxis():
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL )
 	glColor3f(0.0,0.0,0.0)
 	glutSolidSphere(8,8,8)
+
+'''
+Function that draws a Leap in (0,0,0)
+'''
 
 def drawLeap():
 	width = 80
@@ -111,6 +134,9 @@ def drawLeap():
 
 	glEnd()
 
+'''
+Function that draws a sphere at @pos
+'''
 def drawSphere(pos):
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL )
 
@@ -122,7 +148,9 @@ def drawSphere(pos):
 	glutSolidSphere(10,8,8)
 
 	glPopMatrix()
-
+'''
+Function that draws a line from @start_pos to @end_pos
+'''
 def drawLine(start_pos, end_pos):
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE )
 	glColor3f(1.0,1.0,1.0)
@@ -132,25 +160,41 @@ def drawLine(start_pos, end_pos):
 	glVertex3f( end_pos[0], end_pos[1], end_pos[2] )
 	glEnd()
 
+'''
+Function that draws a bone:
+	Draws a sphere at the joint closer to the wrist
+	Draws a line from one joint to the other
+'''
 def drawBone(bone):
 	drawSphere(bone.prev_joint)
 	drawLine(bone.prev_joint, bone.next_joint)
 
+'''
+Function that draws a finger
+'''
 def drawFinger(finger):
 	for b in range(0,4):
 		drawBone(finger.bone(b))
 
+'''
+Function that draws a hand
+'''
 def drawHand(hand):
 	for finger in hand.fingers:
 		drawFinger(finger)
 
+'''
+Function that draws a list of hands
+'''
 def drawHands(hands):
 	for hand in hands:
 		glColor3f(1.0,1.0,1.0)
 		drawHand(hand)
 
-def drawTexts(text):
-	#glPolygonMode( GL_FRONT_AND_BACK, GL_FILL )
+'''
+Function that shows @steps
+'''
+def drawSteps(steps):
 	glPushMatrix()
 	glLoadIdentity()
 
@@ -158,21 +202,22 @@ def drawTexts(text):
 	glRasterPos2f( 250.0,0 )
 	glScalef(20.0,20.0,20.0)
 
-	for letter in text:
+	for letter in steps:
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ord(letter))
 
 	glPopMatrix()
 
-def drawPredefinedHands():
-	pass
-
+'''
+Function that draws the scene
+'''
 def draw():
-	glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT)
+	glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT) #Clean the frame
 
 	setViewport()
 	setProjection()
 	setCamera()
 
+	#Game status control
 	global steps, running
 
 	frame = controller.frame()
@@ -188,20 +233,22 @@ def draw():
 				running = True
 				pygame.mixer.music.play(-1)
 
-
-	#drawAxis()
 	drawLeap()
 	drawHands(frame.hands)
-	drawTexts(str(steps))
-	drawPredefinedHands()
+	drawSteps(str(steps))
 
-	glutSwapBuffers()
+	glutSwapBuffers() #Change this frame and the old frame
 
+'''
+Function to recognize the letter 'q' as exit
+'''
 def keyboardFunc(key, x_mouse, y_mouse):
 	if key == 'q' or key == 'Q':
 		sys.exit(0)
 
-
+'''
+Function that sets window and OpenGL loop
+'''
 def initGlut(arguments):
 
 	glutInit(arguments)
@@ -216,11 +263,13 @@ def initGlut(arguments):
 	glutDisplayFunc(draw)
 	glutIdleFunc(draw)
 
-
+'''
+Function that sets graphics configurations
+'''
 def initOpenGL():
-	glEnable( GL_DEPTH_TEST )
+	glEnable( GL_DEPTH_TEST ) #Needed to use 3D graphics
 
-	glClearColor(0.0,0.1,0.1,1.0)
+	glClearColor(0.0,0.1,0.1,1.0) 
 
 	glLineWidth( 8.0 )
 	glPointSize( 2.0 )
@@ -233,11 +282,13 @@ def initOpenGL():
 
 def init(arguments, newController, newTolerance):
 	global controller
-	controller = newController
+	controller = newController #Set the controller
 
 	global tolerance
-	tolerance = newTolerance
+	tolerance = newTolerance #Set the tolerance
 
+
+	#Tutorial
 	pygame.init()
 	img = pygame.image.load(os.path.abspath('utils/images/tutorial1.jpg'))
 	screen = pygame.display.set_mode((1024,800))
@@ -246,7 +297,7 @@ def init(arguments, newController, newTolerance):
 
 	img = pygame.image.load(os.path.abspath('utils/images/tutorial2.jpg'))
 	screen.blit(img,(0,0))
-	time.sleep(10)
+	time.sleep(5)
 	pygame.display.flip()
 
 	img = pygame.image.load(os.path.abspath('utils/images/tutorial3.jpg'))
@@ -254,7 +305,7 @@ def init(arguments, newController, newTolerance):
 
 	waitingOk = True
 
-
+	# Wait gesture "OK" to start the game
 	while waitingOk:
 		time.sleep(0.02)
 		frame = controller.frame()
@@ -270,10 +321,13 @@ def init(arguments, newController, newTolerance):
 
 	pygame.display.quit()
 
+	#Load music
 	pygame.mixer.init()
 	pygame.mixer.music.load(os.path.abspath('utils/epic_music.mp3'))
 
+	#Set OpenGL
 	initGlut(arguments)
 	initOpenGL()
 
+	#Start OpenGL loop
 	glutMainLoop()

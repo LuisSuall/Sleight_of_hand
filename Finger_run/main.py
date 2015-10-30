@@ -14,6 +14,7 @@ def main(arguments):
 	#We create a new controller.
 	controller = Leap.Controller()
 	
+	#Launch the game
 	graphics.init(arguments, controller, tolerance)
 
 if __name__ == '__main__':
