@@ -27,6 +27,7 @@ Values to track game status
 '''
 steps = 0
 running = False
+counter = 0
 
 
 '''
@@ -208,6 +209,22 @@ def drawSteps(steps):
 	glPopMatrix()
 
 '''
+Function that shows @text
+'''
+def drawText(text):
+	glPushMatrix()
+	glLoadIdentity()
+
+	glColor3f(1.0,1.0,0.0)
+	glRasterPos2f( -300.0,0 )
+	glScalef(20.0,20.0,20.0)
+
+	for letter in text:
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ord(letter))
+
+	glPopMatrix()
+
+'''
 Function that draws the scene
 '''
 def draw():
@@ -218,20 +235,37 @@ def draw():
 	setCamera()
 
 	#Game status control
-	global steps, running
+	global steps, running, counter
 
 	frame = controller.frame()
 
 	if running:
+		drawText("Hold Ok gesture to close")
 		for hand in frame.hands:
 
-			if gesture.detectRunGesture(hand, tolerance):
+			if gesture.detectRunGesture(hand, tolerance): #If a step is detected, count it
 				steps = steps + 1
+
+			#If ok gesture is detected for 60 frames, close the game
+
+			if gesture.detectOKGesture(hand, tolerance): 
+				counter = counter + 1
+			else:
+				counter = 0
+
+			if counter > 60:
+				sys.exit(0)
+
+
+
 	else:
+		drawText("Ok gesture to start")
+
 		for hand in frame.hands:
 			if gesture.detectOKGesture(hand, tolerance):
 				running = True
 				pygame.mixer.music.play(-1)
+			
 
 	drawLeap()
 	drawHands(frame.hands)
