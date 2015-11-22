@@ -19,15 +19,15 @@ def detectRunGesture(hand, tolerance):
     #Then we need the position information about these fingers.
     index = getFinger(hand, 'index')
     middle = getFinger(hand, 'middle')
-    
+
     #We get the tips position of the two fingers.
     index_tip_pos = index.bone(3).next_joint
     middle_tip_pos = middle.bone(3).next_joint
-	 
-	
+
+
 	#We calculate the signed difference between the Y coordenates.
 	#We use the sign to check that the fingers have been moved.
-	
+
     diffBtwTipsY = index_tip_pos[1] - middle_tip_pos[1]
 
     #We check the palm orientation and we want a minimum distance between the two fingers.

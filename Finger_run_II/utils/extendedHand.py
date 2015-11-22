@@ -33,3 +33,13 @@ def getFinger(hand, finger_type):
     for finger in hand.fingers:
         if finger_type == finger_names[finger.type]:
             return finger
+
+'''
+Function that returns the tip position of the selected finger
+@hand: the hand that we're analysing
+@finger_type: the finger whose tip's position we want to get
+'''
+def getTipPosition(hand, finger_type):
+	finger = getFinger(hand, finger_type)
+
+	return finger.bone(3).next_joint
