@@ -5,11 +5,20 @@ import utils.gesture as gesture
 from utils.gesture import *
 from pygame.locals import *
 
+class Sprite(pygame.sprite.Sprite):
+	def __init__ (self, image_path, pos):
+		self.image = pygame.image.load(image_path)
+		self.pos = pos
+
+	def draw (self, surface):
+		surface.blit(self.image, self.pos)
+
 '''
 Function that draws the cursor imagen on the screen
 @cursor: the cursor image
 @frame: the current Leap frame
 '''
+
 def drawCursor(cursor, frame):
 	for hand in frame.hands:
 		cursor_pos = getTipPosition(hand, 'index')
@@ -36,11 +45,14 @@ def main(arguments):
 	#load de cursor image
 	cursor = pygame.image.load('images/cursor.png')
 
+	#create cursor's sprite
+	cursor_sprite = Sprite('images/cursor.png',(500,400))
+
 	#we create a new controller
 	controller = Leap.Controller()
 
 
-
+	pygame.display.update()
 	# run the game loop
 
 	while  True:
@@ -50,8 +62,10 @@ def main(arguments):
 				pygame.quit()
 				sys.exit()
 		frame = controller.frame()
-		drawCursor(cursor, frame)
+		cursor_sprite.draw(DISPLAYSURF)
+		#drawCursor(cursor, frame)
 		pygame.display.update()
+
 
 	'''
 	#We create a new controller.
