@@ -10,6 +10,19 @@ STEP = 4
 def idle():
 	pass
 
+def close():
+	sys.exit()
+
+def back():
+	global current_menu
+	current_menu = current_menu.father
+
+def goGameMenu():
+	global current_menu, game_menu
+	current_menu = game_menu
+
+
+
 class Sprite(pygame.sprite.Sprite):
 	def __init__ (self, image_path, rect):
 		self.image = pygame.image.load(image_path)
@@ -120,11 +133,16 @@ class Cursor(Sprite):
 	def collision(self, buttons):
 		for button in buttons:
 			if self.rect.colliderect(button.rect) and pygame.mouse.get_pressed()[0]:
-				button.press()
+				button.act()
 
 class Menu:
-	def __init__(self, buttons):
+	def __init__(self, buttons, name, father = None):
 		self.buttons = buttons
+		self.father = father
+		self.name = name
+
+	def sayName(self):
+		print(self.name)
 
 	def draw(self, surface):
 		for button in self.buttons:
@@ -134,7 +152,6 @@ Function that draws the cursor imagen on the screen
 @cursor: the cursor image
 @frame: the current Leap frame
 '''
-
 def drawCursor(cursor, frame):
 	for hand in frame.hands:
 		cursor_pos = getTipPosition(hand, 'index')
@@ -155,6 +172,7 @@ def main(arguments):
 	clock = pygame.time.Clock()
 
 	global DISPLAYSURF
+	global current_menu
 	DISPLAYSURF = pygame.display.set_mode((1000,800),0,32)
 	pygame.display.set_caption('Game Screen')
 	DISPLAYSURF.fill((255,255,255))
@@ -216,13 +234,30 @@ def main(arguments):
 	controller = Leap.Controller()
 
 	initial_buttons = []
+	game_buttons = []
+
+	exit_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(1000-80,0,80,80),"EXIT",close)
+
+	back_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(1000-80,800-80,80,80),"BACK",back)
+
 	tutorial_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"TUTORIAL")
-	game_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"GAME")
+	game_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"GAME", goGameMenu)
+
+	play_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"PLAY")
+	level_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"LEVEL")
 
 	initial_buttons.append(tutorial_button)
 	initial_buttons.append(game_button)
 
-	initial_menu = Menu(initial_buttons)
+	game_buttons.append(play_button)
+	game_buttons.append(level_button)
+	game_buttons.append(back_button)
+
+	global initial_menu, game_menu
+	initial_menu = Menu(initial_buttons, "Initial menu")
+	game_menu = Menu(game_buttons, "Game menu", initial_menu)
+
+	current_menu = initial_menu
 
 
 	pygame.display.update()
@@ -235,9 +270,10 @@ def main(arguments):
 				pygame.quit()
 				sys.exit()
 		#frame = controller.frame()
-		initial_menu.draw(DISPLAYSURF)
+		exit_button.draw(DISPLAYSURF)
+		current_menu.draw(DISPLAYSURF)
 		cursor.update()
-		cursor.collision(initial_menu.buttons)
+		cursor.collision(current_menu.buttons+[exit_button])
 		cursor.draw(DISPLAYSURF)
 		#drawCursor(cursor, frame)
 		pygame.display.update()
