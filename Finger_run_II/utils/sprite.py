@@ -131,4 +131,4 @@ class Cursor(Sprite):
 	def collision(self, buttons):
 		for button in buttons:
 			if self.rect.colliderect(button.rect) and pygame.mouse.get_pressed()[0]:
-				button.press()
+				button.act()
