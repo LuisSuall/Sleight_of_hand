@@ -7,6 +7,9 @@ from pygame.locals import *
 
 STEP = 4
 
+def idle():
+	pass
+
 class Sprite(pygame.sprite.Sprite):
 	def __init__ (self, image_path, rect):
 		self.image = pygame.image.load(image_path)
@@ -60,7 +63,7 @@ class Player(Sprite):
 			self.jump_status += 1
 			self.rect.top = self.rect.top + STEP * 1.5
 
-		else: 
+		else:
 			if self.jump_status > 0:
 				self.jump_status += 1
 				self.rect.top = self.rect.top - STEP * 1.5
@@ -78,6 +81,54 @@ class Player(Sprite):
 	def end(self):
 		self.alive = False
 
+class Button(Sprite):
+	def __init__(self, image_path_normal, image_path_pressed, rect, button_text, action = idle):
+		Sprite.__init__(self, image_path_normal, rect)
+		self.image_normal = pygame.image.load(image_path_normal)
+		self.image_pressed = pygame.image.load(image_path_pressed)
+		self.pressed = False
+		self.text = button_text
+		self.action = action
+
+	def press(self):
+		self.pressed = not self.pressed
+
+		if self.pressed:
+			self.image = self.image_pressed
+		else:
+			self.image = self.image_normal
+
+	def draw(self, surface):
+		font = pygame.font.Font(None, 20)
+		Sprite.draw(self, surface)
+		text = font.render(self.text,0,(255,255,255))
+		surface.blit(text, self.rect)
+
+
+	def act(self, *args):
+		self.action(*args)
+
+
+class Cursor(Sprite):
+	def __init__(self, image_path, rect):
+		Sprite.__init__(self, image_path, rect)
+
+	def update(self):
+		self.rect.left = pygame.mouse.get_pos()[0]
+		self.rect.top = pygame.mouse.get_pos()[1]
+
+	def collision(self, buttons):
+		for button in buttons:
+			if self.rect.colliderect(button.rect) and pygame.mouse.get_pressed()[0]:
+				button.press()
+
+class Menu:
+	def __init__(self, buttons):
+		self.buttons = buttons
+
+	def draw(self, surface):
+		for button in self.buttons:
+			button.draw(surface)
 '''
 Function that draws the cursor imagen on the screen
 @cursor: the cursor image
@@ -108,6 +159,7 @@ def main(arguments):
 	pygame.display.set_caption('Game Screen')
 	DISPLAYSURF.fill((255,255,255))
 
+	'''
 	player = Player('images/ph_player.png',(200,368,32,64))
 	speed_bar = SpeedBar('images/Speed_bar.png',(50,700,200,32),60)
 	obstacles = []
@@ -155,11 +207,22 @@ def main(arguments):
 
 	raw_input("End")
 '''
+
 	#create cursor's sprite
-	cursor_sprite = Sprite('images/cursor.png',(500,400))
+	#cursor_sprite = Sprite('images/ph_cursor.png',(400,500,43,43))
+	cursor = Cursor('images/ph_cursor.png',(400,500,43,43))
 
 	#we create a new controller
 	controller = Leap.Controller()
+
+	initial_buttons = []
+	tutorial_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"TUTORIAL")
+	game_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"GAME")
+
+	initial_buttons.append(tutorial_button)
+	initial_buttons.append(game_button)
+
+	initial_menu = Menu(initial_buttons)
 
 
 	pygame.display.update()
@@ -171,26 +234,16 @@ def main(arguments):
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
-		frame = controller.frame()
-		cursor_sprite.draw(DISPLAYSURF)
+		#frame = controller.frame()
+		initial_menu.draw(DISPLAYSURF)
+		cursor.update()
+		cursor.collision(initial_menu.buttons)
+		cursor.draw(DISPLAYSURF)
 		#drawCursor(cursor, frame)
 		pygame.display.update()
-'''
-
-'''
-	#We create a new controller.
-	controller = Leap.Controller()
 
 
-	while True:
-		frame = controller.frame()
 
-		for hand in frame.hands:
-			if gesture.detectJumpGesture(hand,0):
-				print ("Jumping")
-			else:
-				print ("Not jumping")
-'''
 
 
 if __name__ == '__main__':
