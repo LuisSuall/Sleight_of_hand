@@ -162,7 +162,7 @@ class Cursor(Sprite):
 		cursor_y = self.rect.top
 
 		for hand in frame.hands:
-			cursor_pos = getTipPosition(hand, 'middle')
+			cursor_pos = hand.palm_position
 			cursor_x = cursor_pos[0] * 4 + 300
 			cursor_y = -cursor_pos[1] * 2 + 500
 
@@ -175,7 +175,7 @@ class Cursor(Sprite):
 
 	def collision(self, buttons):
 		for button in buttons:
-			if self.rect.colliderect(button.rect) and self.click and button.ON:				
+			if self.rect.colliderect(button.rect) and self.click and button.ON:
 				button.act()
 
 		self.click = False
