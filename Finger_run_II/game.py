@@ -6,13 +6,10 @@ from utils.gesture import *
 from utils.sprite import *
 from pygame.locals import *
 
-def main(arguments):
+def main(level = 3, tol = 10):
 
 	#We set the tolerance to 10% by default.
-	tolerance = 10
-
-	if (len(arguments) == 2):
-		tolerance = int(arguments[1]) #We change the tolerance if we get an argument.
+	tolerance = tol
 
 	pygame.init()
 	clock = pygame.time.Clock()
@@ -30,7 +27,7 @@ def main(arguments):
 
 	controller = Leap.Controller()
 
-	while  player.alive and not speed_bar.end():
+	while  True:#player.alive and not speed_bar.end():
 
 		clock.tick(50) #50 fps lock
 
@@ -53,6 +50,17 @@ def main(arguments):
 			obstacle.update()
 			obstacle.draw(DISPLAYSURF)
 
+		for obstacle in obstacles:
+			if obstacle.isDead():
+				obstacles.remove(obstacle)
+
+		#Random obstacle generation:
+		if (random.randint(1,60) == 1):
+			if (len(obstacles) == 0):
+				obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
+			elif (obstacles[-1].rect.left <= 600-32):
+				obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
+
 		player.update()
 		player.draw(DISPLAYSURF)
 
@@ -69,8 +77,6 @@ def main(arguments):
 
 	if player.alive:
 		print ("Run faster next time.")
-
-	raw_input("End")
 
 if __name__ == '__main__':
 	main(sys.argv)

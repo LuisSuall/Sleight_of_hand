@@ -1,4 +1,4 @@
-import Leap
+import Leap, random
 from utils.gesture import *
 import pygame
 from pygame.locals import *
@@ -25,6 +25,9 @@ Obstacle class
 class Obstacle(Sprite):
 	def update(self):
 		self.rect.left = self.rect.left- STEP
+
+	def isDead(self):
+		return self.rect.right < 0
 
 '''
 SpeedBar class

@@ -5,6 +5,7 @@ import utils.gesture as gesture
 from utils.gesture import *
 from pygame.locals import *
 from utils.sprite import *
+import game
 
 def close():
 	sys.exit()
@@ -16,6 +17,9 @@ def back():
 def goGameMenu():
 	global current_menu, game_menu
 	current_menu = game_menu
+
+def play():
+	game.main()
 
 class Menu:
 	def __init__(self, buttons, name, father = None):
@@ -55,7 +59,7 @@ def main(arguments):
 
 	global DISPLAYSURF
 	global current_menu
-	DISPLAYSURF = pygame.display.set_mode((1000,800),0,32)
+	DISPLAYSURF = pygame.display.set_mode((640,480),0,32)
 	pygame.display.set_caption('Game Screen')
 	DISPLAYSURF.fill((255,255,255))
 
@@ -70,14 +74,14 @@ def main(arguments):
 	initial_buttons = []
 	game_buttons = []
 
-	exit_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(1000-80,0,80,80),"EXIT",close)
+	exit_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(640-80,0,80,80),"EXIT",close)
 
-	back_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(1000-80,800-80,80,80),"BACK",back)
+	back_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(640-80,100,80,80),"BACK",back)
 
 	tutorial_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"TUTORIAL")
 	game_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"GAME", goGameMenu)
 
-	play_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"PLAY")
+	play_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"PLAY", play)
 	level_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"LEVEL")
 
 	initial_buttons.append(tutorial_button)
