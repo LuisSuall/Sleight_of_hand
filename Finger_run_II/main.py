@@ -59,61 +59,13 @@ def main(arguments):
 	pygame.display.set_caption('Game Screen')
 	DISPLAYSURF.fill((255,255,255))
 
-	'''
-	player = Player('images/ph_player.png',(200,368,32,64))
-	speed_bar = SpeedBar('images/Speed_bar.png',(50,700,200,32),60)
-	obstacles = []
-	obstacles.append(Obstacle('images/ph_obstacle.png', (1000,400,32,32)))
-
-	controller = Leap.Controller()
-
-	while  player.alive and not speed_bar.end():
-
-		clock.tick(60) #60 fps lock
-
-		DISPLAYSURF.fill((255,255,255))
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				pygame.quit()
-				sys.exit()
-
-		frame = controller.frame()
-
-		for hand in frame.hands:
-			if detectJumpGesture(hand,0):
-				player.jump()
-
-			speed_bar.update(detectRunGesture(hand,0))
-
-		for obstacle in obstacles:
-			obstacle.update()
-			obstacle.draw(DISPLAYSURF)
-
-		player.update()
-		player.draw(DISPLAYSURF)
-
-		speed_bar.draw(DISPLAYSURF)
-
-		if (player.collision(obstacles)):
-			player.end()
-
-		pygame.display.update()
-
-	DISPLAYSURF.fill((0,0,0))
-	pygame.display.update()
-
-	if player.alive:
-		print ("Run faster next time.")
-
-	raw_input("End")
-'''
-
 	#create cursor's sprite
 	#cursor_sprite = Sprite('images/ph_cursor.png',(400,500,43,43))
 	cursor = Cursor('images/ph_cursor.png',(400,500,43,43))
 
 	#we create a new controller
 	controller = Leap.Controller()
+	controller.enable_gesture(Leap.Gesture.TYPE_KEY_TAP)
 
 	initial_buttons = []
 	game_buttons = []
@@ -151,13 +103,16 @@ def main(arguments):
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
-		#frame = controller.frame()
+
+		frame = controller.frame()
+		cursor.update(frame)
+
 		exit_button.draw(DISPLAYSURF)
 		current_menu.draw(DISPLAYSURF)
-		cursor.update()
+
 		cursor.collision(current_menu.buttons+[exit_button])
 		cursor.draw(DISPLAYSURF)
-		#drawCursor(cursor, frame)
+
 		pygame.display.update()
 
 

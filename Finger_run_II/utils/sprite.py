@@ -1,3 +1,5 @@
+import Leap
+from utils.gesture import *
 import pygame
 from pygame.locals import *
 
@@ -58,6 +60,7 @@ class Player(Sprite):
 	def __init__(self, image_path, rect):
 		Sprite.__init__(self, image_path, rect)
 		self.jump_status = 0
+		self.image_status = 0
 		self.alive = True
 
 	def jump(self):
@@ -65,17 +68,19 @@ class Player(Sprite):
 			self.jump_status = 1
 
 	def update(self):
+		self.image_status = (self.image_status + 1) % 16
+
 		if self.jump_status < 0:
 			self.jump_status += 1
-			self.rect.top = self.rect.top + STEP * 1.5
+			self.rect.top = self.rect.top + STEP
 
 		else:
 			if self.jump_status > 0:
 				self.jump_status += 1
-				self.rect.top = self.rect.top - STEP * 1.5
+				self.rect.top = self.rect.top - STEP
 
-				if self.jump_status >= 30:
-					self.jump_status = -29
+				if self.jump_status >= 23:
+					self.jump_status = -22
 
 	def collision(self, obstacles):
 		for obstacle in obstacles:
@@ -83,6 +88,12 @@ class Player(Sprite):
 				return True
 
 		return False
+
+
+	def draw(self, surface):
+		image_number = self.image_status /4
+		rect = pygame.Rect(image_number * 32,0,32, 64)
+		surface.blit(self.image, (self.rect.left, self.rect.top), rect)
 
 	def end(self):
 		self.alive = False
@@ -123,12 +134,28 @@ Cursor class
 class Cursor(Sprite):
 	def __init__(self, image_path, rect):
 		Sprite.__init__(self, image_path, rect)
+		self.click = False
 
-	def update(self):
-		self.rect.left = pygame.mouse.get_pos()[0]
-		self.rect.top = pygame.mouse.get_pos()[1]
+	def update(self, frame):
+
+		cursor_x = self.rect.left
+		cursor_y = self.rect.top
+
+		for hand in frame.hands:
+			cursor_pos = getTipPosition(hand, 'index')
+			cursor_x = cursor_pos[0] * 4 + 300
+			cursor_y = -cursor_pos[1] * 2 + 500
+
+		for gesture in frame.gestures():
+			if gesture.type is Leap.Gesture.TYPE_KEY_TAP:
+				self.click = True
+
+		self.rect.left = cursor_x
+		self.rect.top =  cursor_y
 
 	def collision(self, buttons):
 		for button in buttons:
-			if self.rect.colliderect(button.rect) and pygame.mouse.get_pressed()[0]:
+			if self.rect.colliderect(button.rect) and self.click:
 				button.act()
+
+		self.click = False
