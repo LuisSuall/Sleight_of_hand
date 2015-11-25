@@ -6,10 +6,13 @@ from utils.gesture import *
 from utils.sprite import *
 from pygame.locals import *
 
-def main(level = 3, tol = 10):
+def main(level = 1, tol = 10):
 
 	#We set the tolerance to 10% by default.
 	tolerance = tol
+	scoreboard = 0
+
+	print("Nivel",level)
 
 	pygame.init()
 	clock = pygame.time.Clock()
@@ -21,13 +24,15 @@ def main(level = 3, tol = 10):
 	player = Player('images/player.png',(100,218,32,64))
 	speed_bar = SpeedBar('images/Speed_bar.png',(30,418,200,32),60)
 	speed_frame = Sprite('images/Speed_frame.png',(20,408,220,52))
+	scoreboard_frame = Sprite('images/Speed_frame.png',(400,408,220,52))
 	obstacles = []
+	coins = []
 	obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
 
 
 	controller = Leap.Controller()
 
-	while  True:#player.alive and not speed_bar.end():
+	while True:#player.alive and not speed_bar.end():
 
 		clock.tick(50) #50 fps lock
 
@@ -50,9 +55,22 @@ def main(level = 3, tol = 10):
 			obstacle.update()
 			obstacle.draw(DISPLAYSURF)
 
+		for coin in coins:
+			coin.update()
+			coin.draw(DISPLAYSURF)
+
 		for obstacle in obstacles:
 			if obstacle.isDead():
 				obstacles.remove(obstacle)
+
+		for coin in coins:
+			if coin.isDead():
+				coins.remove(coin)
+			elif player.collisionWithCoin(coin):
+				scoreboard += 1
+				coins.remove(coin)
+
+
 
 		#Random obstacle generation:
 		if (random.randint(1,60) == 1):
@@ -61,9 +79,20 @@ def main(level = 3, tol = 10):
 			elif (obstacles[-1].rect.left <= 600-32):
 				obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
 
+		#Randowm coin generation:
+		if (random.randint(1,30) == 1):
+			if (len(coins) == 0):
+				coins.append(Coin('images/ph_obstacle.png', (600,168,32,32)))
+			elif (coins[-1].rect.left <= 600-32):
+				coins.append(Coin('images/ph_obstacle.png', (600,168,32,32)))
+
 		player.update()
 		player.draw(DISPLAYSURF)
 
+		font = pygame.font.Font(None, 40)
+		scoreboard_text = font.render(str(scoreboard),0,(0,0,0))
+		scoreboard_frame.draw(DISPLAYSURF)
+		DISPLAYSURF.blit(scoreboard_text, (scoreboard_frame.rect.left+10,scoreboard_frame.rect.top+10,30,30))
 		speed_frame.draw(DISPLAYSURF)
 		speed_bar.draw(DISPLAYSURF)
 

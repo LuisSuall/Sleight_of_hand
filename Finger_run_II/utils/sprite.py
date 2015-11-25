@@ -29,6 +29,19 @@ class Obstacle(Sprite):
 	def isDead(self):
 		return self.rect.right < 0
 
+
+'''
+Coin class
+'''
+
+class Coin(Sprite):
+	def update(self):
+		self.rect.left = self.rect.left- STEP
+
+	def isDead(self):
+		return self.rect.right < 0
+
+
 '''
 SpeedBar class
 '''
@@ -92,6 +105,9 @@ class Player(Sprite):
 
 		return False
 
+	def collisionWithCoin(self, coin):
+		return self.rect.colliderect(coin.rect)
+
 
 	def draw(self, surface):
 		image_number = self.image_status /4
@@ -112,6 +128,7 @@ class Button(Sprite):
 		self.pressed = False
 		self.text = button_text
 		self.action = action
+		self.ON = False
 
 	def press(self):
 		self.pressed = not self.pressed
@@ -145,12 +162,12 @@ class Cursor(Sprite):
 		cursor_y = self.rect.top
 
 		for hand in frame.hands:
-			cursor_pos = getTipPosition(hand, 'index')
+			cursor_pos = getTipPosition(hand, 'middle')
 			cursor_x = cursor_pos[0] * 4 + 300
 			cursor_y = -cursor_pos[1] * 2 + 500
 
-		for gesture in frame.gestures():
-			if gesture.type is Leap.Gesture.TYPE_KEY_TAP:
+		for hand in frame.hands:
+			if detectOKGesture(hand, 10):
 				self.click = True
 
 		self.rect.left = cursor_x
@@ -158,7 +175,7 @@ class Cursor(Sprite):
 
 	def collision(self, buttons):
 		for button in buttons:
-			if self.rect.colliderect(button.rect) and self.click:
+			if self.rect.colliderect(button.rect) and self.click and button.ON:				
 				button.act()
 
 		self.click = False

@@ -12,14 +12,28 @@ def close():
 
 def back():
 	global current_menu
+	current_menu.turnOffButtons()
 	current_menu = current_menu.father
 
 def goGameMenu():
 	global current_menu, game_menu
+	current_menu.turnOffButtons()
 	current_menu = game_menu
 
-def play():
-	game.main()
+def play1():
+	global current_menu
+	current_menu.turnOffButtons()
+	game.main(1)
+
+def play2():
+	global current_menu
+	current_menu.turnOffButtons()
+	game.main(2)
+
+def play3():
+	global current_menu
+	current_menu.turnOffButtons()
+	game.main(3)
 
 class Menu:
 	def __init__(self, buttons, name, father = None):
@@ -27,10 +41,23 @@ class Menu:
 		self.father = father
 		self.name = name
 
-	def sayName(self):
-		print(self.name)
+	def turnOnButtons(self):
+		for button in self.buttons:
+			button.ON = True
 
-	def draw(self, surface):
+	def turnOffButtons(self):
+		for button in self.buttons:
+			button.ON = False
+
+	def draw(self, surface, frame):
+		OK_detected = False
+		for hand in frame.hands:
+			if detectOKGesture(hand, 10):
+				OK_detected = True
+
+		if not OK_detected:
+			self.turnOnButtons()
+
 		for button in self.buttons:
 			button.draw(surface)
 '''
@@ -81,15 +108,19 @@ def main(arguments):
 	tutorial_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"TUTORIAL")
 	game_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"GAME", goGameMenu)
 
-	play_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"PLAY", play)
-	level_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"LEVEL")
+	level1_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"LEVEL 1",play1)
+	level2_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"LEVEL 2",play2)
+	level3_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(230,100,80,80),"LEVEL 3",play3)
 
 	initial_buttons.append(tutorial_button)
 	initial_buttons.append(game_button)
+	initial_buttons.append(exit_button)
 
-	game_buttons.append(play_button)
-	game_buttons.append(level_button)
+	game_buttons.append(level1_button)
+	game_buttons.append(level2_button)
+	game_buttons.append(level3_button)
 	game_buttons.append(back_button)
+	game_buttons.append(exit_button)
 
 	global initial_menu, game_menu
 	initial_menu = Menu(initial_buttons, "Initial menu")
@@ -112,7 +143,7 @@ def main(arguments):
 		cursor.update(frame)
 
 		exit_button.draw(DISPLAYSURF)
-		current_menu.draw(DISPLAYSURF)
+		current_menu.draw(DISPLAYSURF, frame)
 
 		cursor.collision(current_menu.buttons+[exit_button])
 		cursor.draw(DISPLAYSURF)
