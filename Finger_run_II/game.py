@@ -37,6 +37,7 @@ def main(level = 1, tol = 10):
 		clock.tick(50) #50 fps lock
 
 		DISPLAYSURF.fill((221,215,153))
+		pygame.draw.rect(DISPLAYSURF,(96,78,8),pygame.Rect(0,272,640,208) )
 
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -82,9 +83,9 @@ def main(level = 1, tol = 10):
 		#Randowm coin generation:
 		if (random.randint(1,30) == 1):
 			if (len(coins) == 0):
-				coins.append(Coin('images/ph_obstacle.png', (600,168,32,32)))
+				coins.append(Coin('images/coin.png', (600,168,32,32)))
 			elif (coins[-1].rect.left <= 600-32):
-				coins.append(Coin('images/ph_obstacle.png', (600,168,32,32)))
+				coins.append(Coin('images/coin.png', (600,168,32,32)))
 
 		player.update()
 		player.draw(DISPLAYSURF)
