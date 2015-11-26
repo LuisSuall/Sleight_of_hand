@@ -50,14 +50,21 @@ def main():
 		DISPLAYSURF.fill((221,215,153))
 
 		frame = controller.frame()
+		no_prev_OK = False
 
 		if phase == 1:
+			if not no_prev_OK:
+				no_prev_OK = True
+				for hand in frame.hands:
+					if detectOKGesture(hand,10):
+						no_prev_OK = False
+
 			okgestureimage.draw(DISPLAYSURF)
 			DISPLAYSURF.blit(ok_text, (10,0,30,30))
 			player.draw(DISPLAYSURF)
 			#We have to make the OK gesture to continue
 			for hand in frame.hands:
-				if detectOKGesture(hand,10):
+				if detectOKGesture(hand,10)  and noprevOK:
 					phase += 1
 		elif phase == 2:
 			rungestureimage.draw(DISPLAYSURF)
