@@ -107,17 +107,17 @@ def main(arguments):
 	initial_buttons = []
 	game_buttons = []
 
-	title = Button('images/title.png', 'images/title.png', (170,25,300,150),"")
-	exit_button = Button('images/button.png','images/button.png',(220,380,200,80),"EXIT",close)
+	title = Button('images/title.png', (170,25,300,150),"")
+	exit_button = Button('images/button.png',(220,380,200,80),"EXIT",close)
 
-	back_button = Button('images/button.png','images/button.png',(220,290,200,80),"BACK",back)
+	back_button = Button('images/button.png',(220,290,200,80),"BACK",back)
 
-	tutorial_button = Button('images/button.png','images/button.png',(220,290,200,80),"TUTORIAL",goTutorial)
-	game_button = Button('images/button.png','images/button.png',(220,200,200,80),"GAME", goGameMenu)
+	tutorial_button = Button('images/button.png',(220,290,200,80),"TUTORIAL",goTutorial)
+	game_button = Button('images/button.png',(220,200,200,80),"GAME", goGameMenu)
 
-	level1_button = Button('images/button.png','images/button.png',(220,20,200,80),"LEVEL 1",play1)
-	level2_button = Button('images/button.png','images/button.png',(220,110,200,80),"LEVEL 2",play2)
-	level3_button = Button('images/button.png','images/button.png',(220,200,200,80),"LEVEL 3",play3)
+	level1_button = Button('images/button.png',(220,20,200,80),"LEVEL 1",play1)
+	level2_button = Button('images/button.png',(220,110,200,80),"LEVEL 2",play2)
+	level3_button = Button('images/button.png',(220,200,200,80),"LEVEL 3",play3)
 
 	initial_buttons.append(title)
 	initial_buttons.append(tutorial_button)
