@@ -12,7 +12,7 @@ def main(level = 1, tol = 10):
 	tolerance = tol
 	scoreboard = 0
 
-	print("Nivel",level)
+	game_speed = 30 + level * 10
 
 	pygame.init()
 	clock = pygame.time.Clock()
@@ -39,9 +39,9 @@ def main(level = 1, tol = 10):
 
 	controller = Leap.Controller()
 
-	while True:#player.alive and not speed_bar.end():
+	while player.alive and not speed_bar.end():
 
-		clock.tick(50) #50 fps lock
+		clock.tick(game_speed) 
 
 		DISPLAYSURF.fill((221,215,153))
 		pygame.draw.rect(DISPLAYSURF,(96,78,8),pygame.Rect(0,272,640,208) )
