@@ -41,6 +41,12 @@ class Coin(Sprite):
 	def isDead(self):
 		return self.rect.right < 0
 
+'''
+Cloud class
+'''
+class Cloud(Sprite):
+	def update(self):
+		self.rect.left = self.rect.left - 1 
 
 '''
 SpeedBar class
@@ -141,8 +147,8 @@ class Button(Sprite):
 	def draw(self, surface):
 		font = pygame.font.Font(None, 20)
 		Sprite.draw(self, surface)
-		text = font.render(self.text,0,(255,255,255))
-		surface.blit(text, self.rect)
+		text = font.render(self.text,0,(119,54,58))
+		surface.blit(text, (self.rect.left + 10,self.rect.top + self.rect.height/ 2 -10))
 
 
 	def act(self, *args):

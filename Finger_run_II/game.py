@@ -25,9 +25,16 @@ def main(level = 1, tol = 10):
 	speed_bar = SpeedBar('images/Speed_bar.png',(30,418,200,32),60)
 	speed_frame = Sprite('images/Speed_frame.png',(20,408,220,52))
 	scoreboard_frame = Sprite('images/Speed_frame.png',(400,408,220,52))
+	
 	obstacles = []
-	coins = []
 	obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
+	
+	coins = []
+	
+	clouds = []
+	clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
+	clouds.append(Cloud('images/cloud.png', (200, 50,32,64)))
+	clouds.append(Cloud('images/cloud.png', (350, 50,32,64)))
 
 
 	controller = Leap.Controller()
@@ -60,6 +67,10 @@ def main(level = 1, tol = 10):
 			coin.update()
 			coin.draw(DISPLAYSURF)
 
+		for cloud in clouds:
+			cloud.update()
+			cloud.draw(DISPLAYSURF)
+
 		for obstacle in obstacles:
 			if obstacle.isDead():
 				obstacles.remove(obstacle)
@@ -74,18 +85,25 @@ def main(level = 1, tol = 10):
 
 
 		#Random obstacle generation:
-		if (random.randint(1,60) == 1):
+		if (random.randint(1,30) == 1):
 			if (len(obstacles) == 0):
 				obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
-			elif (obstacles[-1].rect.left <= 600-32):
+			elif (obstacles[-1].rect.left <= 600-(32*5)):
 				obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
 
-		#Randowm coin generation:
+		#Random coin generation:
 		if (random.randint(1,30) == 1):
 			if (len(coins) == 0):
 				coins.append(Coin('images/coin.png', (600,168,32,32)))
 			elif (coins[-1].rect.left <= 600-32):
 				coins.append(Coin('images/coin.png', (600,168,32,32)))
+
+		#Random cloud generation:
+		if (random.randint(1,150) == 1):
+			if (len(clouds) == 0):
+				clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
+			elif (coins[-1].rect.left <= 600-32):
+				clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
 
 		player.update()
 		player.draw(DISPLAYSURF)

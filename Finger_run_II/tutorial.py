@@ -15,7 +15,7 @@ def main():
 	height = 480
 	DISPLAYSURF = pygame.display.set_mode((width,height),0,32)
 	pygame.display.set_caption('Tutorial')
-	phase = 2
+	phase = 1
 	steps_count = 0
 
 	controller = Leap.Controller()
@@ -38,7 +38,7 @@ def main():
 	obstacle_text = font.render("A Windows logo with a poor design, dodge it!",0,(119,54,58))
 	bye_text = font.render("The tutorial has finished. Say OK to exit.",0,(119,54,58))
 	runimage_index = 0
-	
+
 	while phase <= 5:
 		clock.tick(50) #50 fps lock
 
@@ -67,7 +67,7 @@ def main():
 			for hand in frame.hands:
 				if detectRunGesture(hand,0):
 					runimage_index = (runimage_index+1)%2
-					rungestureimage.image = rungestureimages[i]
+					rungestureimage.image = rungestureimages[runimage_index]
 					steps_count += 1
 					player.update()
 

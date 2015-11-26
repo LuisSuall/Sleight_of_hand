@@ -6,6 +6,7 @@ from utils.gesture import *
 from pygame.locals import *
 from utils.sprite import *
 import game
+import tutorial
 
 def close():
 	sys.exit()
@@ -19,6 +20,11 @@ def goGameMenu():
 	global current_menu, game_menu
 	current_menu.turnOffButtons()
 	current_menu = game_menu
+
+def goTutorial():
+	global current_menu
+	current_menu.turnOffButtons()
+	tutorial.main()
 
 def play1():
 	global current_menu
@@ -101,17 +107,19 @@ def main(arguments):
 	initial_buttons = []
 	game_buttons = []
 
-	exit_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(640-80,0,80,80),"EXIT",close)
+	title = Button('images/title.png', 'images/title.png', (170,25,300,150),"")
+	exit_button = Button('images/button.png','images/button.png',(220,380,200,80),"EXIT",close)
 
-	back_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(640-80,100,80,80),"BACK",back)
+	back_button = Button('images/button.png','images/button.png',(220,290,200,80),"BACK",back)
 
-	tutorial_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"TUTORIAL")
-	game_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"GAME", goGameMenu)
+	tutorial_button = Button('images/button.png','images/button.png',(220,290,200,80),"TUTORIAL",goTutorial)
+	game_button = Button('images/button.png','images/button.png',(220,200,200,80),"GAME", goGameMenu)
 
-	level1_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(10,100,80,80),"LEVEL 1",play1)
-	level2_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(120,100,80,80),"LEVEL 2",play2)
-	level3_button = Button('images/ph_button.png','images/ph_pressedbutton.png',(230,100,80,80),"LEVEL 3",play3)
+	level1_button = Button('images/button.png','images/button.png',(220,20,200,80),"LEVEL 1",play1)
+	level2_button = Button('images/button.png','images/button.png',(220,110,200,80),"LEVEL 2",play2)
+	level3_button = Button('images/button.png','images/button.png',(220,200,200,80),"LEVEL 3",play3)
 
+	initial_buttons.append(title)
 	initial_buttons.append(tutorial_button)
 	initial_buttons.append(game_button)
 	initial_buttons.append(exit_button)
@@ -120,7 +128,7 @@ def main(arguments):
 	game_buttons.append(level2_button)
 	game_buttons.append(level3_button)
 	game_buttons.append(back_button)
-	game_buttons.append(exit_button)
+	#game_buttons.append(exit_button)
 
 	global initial_menu, game_menu
 	initial_menu = Menu(initial_buttons, "Initial menu")
@@ -133,7 +141,7 @@ def main(arguments):
 	# run the game loop
 
 	while  True:
-		DISPLAYSURF.fill((255,255,255))
+		DISPLAYSURF.fill((221,215,153))
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
