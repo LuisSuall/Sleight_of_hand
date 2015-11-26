@@ -12,8 +12,10 @@ def main(level = 1, tol = 10):
 	tolerance = tol
 	scoreboard = 0
 
+	#Set the game speed 
 	game_speed = 30 + level * 10
 
+	#Set up pygame
 	pygame.init()
 	clock = pygame.time.Clock()
 
@@ -21,6 +23,7 @@ def main(level = 1, tol = 10):
 	DISPLAYSURF = pygame.display.set_mode((640,480),0,32)
 	pygame.display.set_caption('Game Screen')
 
+	#Load all sprites
 	player = Player('images/player.png',(100,218,32,64))
 	speed_bar = SpeedBar('images/Speed_bar.png',(30,418,200,32),60)
 	speed_frame = Sprite('images/Speed_frame.png',(20,408,220,52))
@@ -36,21 +39,25 @@ def main(level = 1, tol = 10):
 	clouds.append(Cloud('images/cloud.png', (200, 50,32,64)))
 	clouds.append(Cloud('images/cloud.png', (350, 50,32,64)))
 
-
+	#Create Leap controller
 	controller = Leap.Controller()
 
+	#Game main Loop
 	while player.alive and not speed_bar.end():
 
-		clock.tick(game_speed)
+		clock.tick(game_speed) #FPS Lock
 
+		#Draw background and ground
 		DISPLAYSURF.fill((221,215,153))
 		pygame.draw.rect(DISPLAYSURF,(96,78,8),pygame.Rect(0,272,640,208) )
 
+		#Handle pygame events
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
 
+		#Handle controller
 		frame = controller.frame()
 
 		for hand in frame.hands:
@@ -59,22 +66,26 @@ def main(level = 1, tol = 10):
 
 			speed_bar.update(detectRunGesture(hand,0))
 
+		#Draw all obstacles
 		for obstacle in obstacles:
 			obstacle.update()
 			obstacle.draw(DISPLAYSURF)
-
+		#Draw all coins
 		for coin in coins:
 			coin.update()
 			coin.draw(DISPLAYSURF)
-
+		#Draw all clouds
 		for cloud in clouds:
 			cloud.update()
 			cloud.draw(DISPLAYSURF)
 
+		#Remove unneeded obstacles
 		for obstacle in obstacles:
 			if obstacle.isDead():
 				obstacles.remove(obstacle)
 
+		#Remove coins
+		#Also keeps the scoreboard updated
 		for coin in coins:
 			if coin.isDead():
 				coins.remove(coin)
@@ -85,7 +96,7 @@ def main(level = 1, tol = 10):
 
 
 		#Random obstacle generation:
-		if (random.randint(1,30) == 1):
+		if (random.randint(1,50 - level * 10) == 1):
 			if (len(obstacles) == 0):
 				obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
 			elif (obstacles[-1].rect.left <= 600-(32*5)):
@@ -105,9 +116,11 @@ def main(level = 1, tol = 10):
 			elif (clouds[-1].rect.left <= 600-32):
 				clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
 
+		#Draw player
 		player.update()
 		player.draw(DISPLAYSURF)
 
+		#Draw scoreboard and speed bar
 		font = pygame.font.Font(None, 40)
 		scoreboard_text = font.render(str(scoreboard),0,(0,0,0))
 		scoreboard_frame.draw(DISPLAYSURF)
@@ -115,16 +128,50 @@ def main(level = 1, tol = 10):
 		speed_frame.draw(DISPLAYSURF)
 		speed_bar.draw(DISPLAYSURF)
 
+		#If the player hits an obstacle, the game ends
 		if (player.collision(obstacles)):
 			player.end()
 
+		#Update display
 		pygame.display.update()
 
-	DISPLAYSURF.fill((0,0,0))
+	#Blue Screen Of Death
+	DISPLAYSURF.fill((0,0,128))
+
+	font = pygame.font.Font(None, 22)
+	text = font.render("A problem has been detected and Windows has been shut down to prevent damage",0,(255,255,255))
+	DISPLAYSURF.blit(text, (0,10))
+	text = font.render("to your computer.",0,(255,255,255))
+	DISPLAYSURF.blit(text, (0,35))
+	
+	#Show cause of death
+	if player.alive:
+		text = font.render("RUN_FASTER_IPHONE_XXL10_SOLD_OUT",0,(255,255,255))
+		DISPLAYSURF.blit(text, (0,70))
+	else:
+		text = font.render("AVOID_WINDOWS_AVOID_BSOD",0,(255,255,255))
+		DISPLAYSURF.blit(text, (0,70))
+
+	text = font.render("Try again and beat your score. If you think is just too difficult, buy the DLC.",0,(255,255,255))
+	DISPLAYSURF.blit(text, (0,120))
+
+	#Show score
+	text = font.render("Score: " + str(scoreboard),0,(255,255,255))
+	DISPLAYSURF.blit(text, (0,145))
+
+	text = font.render("Ok gesture to continue.",0,(255,255,255))
+	DISPLAYSURF.blit(text, (0,200))
+
 	pygame.display.update()
 
-	if player.alive:
-		print ("Run faster next time.")
+	#Detect OK gesture to exit
+	waiting_ok = True
+	while waiting_ok:
+		frame = controller.frame()
+
+		for hand in frame.hands:
+			if detectOKGesture(hand,0):
+				waiting_ok = False
 
 if __name__ == '__main__':
 	main(sys.argv)
