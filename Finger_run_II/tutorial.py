@@ -55,23 +55,31 @@ def main():
 		frame = controller.frame()
 
 		if phase == 1:
+
+			#Wait for the user to end the ok gesture from menu
 			if not no_prev_OK:
 				no_prev_OK = True
 				for hand in frame.hands:
 					if detectOKGesture(hand,10):
 						no_prev_OK = False
 
+			#Draw phase 1
 			okgestureimage.draw(DISPLAYSURF)
 			DISPLAYSURF.blit(ok_text, (10,0,30,30))
 			player.draw(DISPLAYSURF)
+			
 			#We have to make the OK gesture to continue
 			for hand in frame.hands:
 				if detectOKGesture(hand,10)  and no_prev_OK:
 					phase += 1
+
 		elif phase == 2:
+
+			#Draw phase 2
 			rungestureimage.draw(DISPLAYSURF)
 			DISPLAYSURF.blit(run_text, (10, 0, 30, 30))
 			player.draw(DISPLAYSURF)
+
 			#Check run gesture
 			for hand in frame.hands:
 				if detectRunGesture(hand,0):
@@ -83,7 +91,10 @@ def main():
 			#We have to make the some steps to continue
 			if steps_count == 10:
 				phase += 1
+
 		elif phase == 3:
+
+			#Draw phase 3
 			DISPLAYSURF.blit(jump_text, (60, 0, 30, 30))
 			player.update()
 			player.draw(DISPLAYSURF)
@@ -103,7 +114,10 @@ def main():
 			#We have to complete a jump to continue
 			if (not drawCoin and player.rect.top == 218):
 				phase += 1
+
 		elif phase == 4:
+
+			#Draw phase 4
 			DISPLAYSURF.blit(obstacle_text, (10,0,30,30))
 			player.draw(DISPLAYSURF)
 			player.update()
@@ -123,6 +137,8 @@ def main():
 			if obstacle.isDead():
 				phase += 1
 		else:
+
+			#Draw phase 5
 			DISPLAYSURF.blit(bye_text,(50,0,30,30))
 			player.update()
 			player.draw(DISPLAYSURF)
@@ -132,9 +148,7 @@ def main():
 				if detectOKGesture(hand,10):
 					phase += 1
 
-
-
-
+		#Update display
 		pygame.display.update()
 
 
