@@ -21,6 +21,8 @@ def main():
 	controller = Leap.Controller()
 	font = pygame.font.Font(None, 40)
 
+	drawCoin = True
+
 	#Create the tutorial's elements
 	player = Player('images/player.png',(width/2-32,218,32,64))
 	coin = Coin('images/coin.png', (width/2-32,168,32,32))
@@ -43,7 +45,6 @@ def main():
 		DISPLAYSURF.fill((221,215,153))
 
 		frame = controller.frame()
-		drawCoin = True
 
 		if phase == 1:
 			DISPLAYSURF.blit(ok_text, (10,0,30,30))
