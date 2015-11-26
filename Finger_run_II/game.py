@@ -25,12 +25,12 @@ def main(level = 1, tol = 10):
 	speed_bar = SpeedBar('images/Speed_bar.png',(30,418,200,32),60)
 	speed_frame = Sprite('images/Speed_frame.png',(20,408,220,52))
 	scoreboard_frame = Sprite('images/Speed_frame.png',(400,408,220,52))
-	
+
 	obstacles = []
 	obstacles.append(Obstacle('images/obstacle.png', (600,250,32,32)))
-	
+
 	coins = []
-	
+
 	clouds = []
 	clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
 	clouds.append(Cloud('images/cloud.png', (200, 50,32,64)))
@@ -41,7 +41,7 @@ def main(level = 1, tol = 10):
 
 	while player.alive and not speed_bar.end():
 
-		clock.tick(game_speed) 
+		clock.tick(game_speed)
 
 		DISPLAYSURF.fill((221,215,153))
 		pygame.draw.rect(DISPLAYSURF,(96,78,8),pygame.Rect(0,272,640,208) )
@@ -102,7 +102,7 @@ def main(level = 1, tol = 10):
 		if (random.randint(1,150) == 1):
 			if (len(clouds) == 0):
 				clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
-			elif (coins[-1].rect.left <= 600-32):
+			elif (clouds[-1].rect.left <= 600-32):
 				clouds.append(Cloud('images/cloud.png', (600, 50,32,64)))
 
 		player.update()
