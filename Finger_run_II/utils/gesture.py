@@ -69,6 +69,7 @@ Function that detects the jump gesture.
 '''
 def detectJumpGesture(hand,tolerance):
 
+	#Get hand speed
 	hand_speed = hand.palm_velocity
 
 	if palmOrientation(hand) == 'down' and hand_speed.y > (500 - percentage(500, tolerance)):
