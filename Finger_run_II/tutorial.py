@@ -15,13 +15,17 @@ def main():
 	height = 480
 	DISPLAYSURF = pygame.display.set_mode((width,height),0,32)
 	pygame.display.set_caption('Tutorial')
-	phase = 1
+	phase = 2
 	steps_count = 0
 
 	controller = Leap.Controller()
 	font = pygame.font.Font(None, 40)
 
+	rungestureimages = [pygame.image.load("images/rungesture1.png"),pygame.image.load("images/rungesture2.png")]
+
 	#Create the tutorial's elements
+	okgestureimage = Sprite("images/okgesture.png",(width-290,height-280,290,280))
+	rungestureimage = Sprite("images/rungesture1.png",(width-290,height-280,290,280))
 	player = Player('images/player.png',(width/2-32,218,32,64))
 	coin = Coin('images/coin.png', (width/2-32,168,32,32))
 	obstacle = Obstacle('images/obstacle.png', (600,250,32,32))
@@ -31,7 +35,7 @@ def main():
 	jump_text = font.render("Jump to get a coin for a Frappuccino!",0,(119,54,58))
 	obstacle_text = font.render("A Windows logo with a poor design, dodge it!",0,(119,54,58))
 	bye_text = font.render("The tutorial has finished. Say OK to exit.",0,(119,54,58))
-
+	runimage_index = 0
 	while phase <= 5:
 		clock.tick(50) #50 fps lock
 
@@ -46,6 +50,7 @@ def main():
 		drawCoin = True
 
 		if phase == 1:
+			okgestureimage.draw(DISPLAYSURF)
 			DISPLAYSURF.blit(ok_text, (10,0,30,30))
 			player.draw(DISPLAYSURF)
 			#We have to make the OK gesture to continue
@@ -53,13 +58,17 @@ def main():
 				if detectOKGesture(hand,10):
 					phase += 1
 		elif phase == 2:
+			rungestureimage.draw(DISPLAYSURF)
 			DISPLAYSURF.blit(run_text, (10, 0, 30, 30))
 			player.draw(DISPLAYSURF)
 			#Check run gesture
 			for hand in frame.hands:
 				if detectRunGesture(hand,0):
+					runimage_index = (runimage_index+1)%2
+					rungestureimage.image = rungestureimages[i]
 					steps_count += 1
 					player.update()
+
 			#We have to make the some steps to continue
 			if steps_count == 10:
 				phase += 1
