@@ -28,6 +28,7 @@ def main():
 	#Create the tutorial's elements
 	okgestureimage = Sprite("images/okgesture.png",(width-290,height-280,290,280))
 	rungestureimage = Sprite("images/rungesture1.png",(width-290,height-280,290,280))
+	jumpgestureimage = Sprite("images/jumpgesture.png",(width-290,height-280,290,280))
 	player = Player('images/player.png',(width/2-32,218,32,64))
 	coin = Coin('images/coin.png', (width/2-32,168,32,32))
 	obstacle = Obstacle('images/obstacle.png', (600,250,32,32))
@@ -38,6 +39,8 @@ def main():
 	obstacle_text = font.render("A Windows logo with a poor design, dodge it!",0,(119,54,58))
 	bye_text = font.render("The tutorial has finished. Say OK to exit.",0,(119,54,58))
 	runimage_index = 0
+
+	no_prev_OK = False
 
 	while phase <= 5:
 		clock.tick(50) #50 fps lock
@@ -50,7 +53,6 @@ def main():
 		DISPLAYSURF.fill((221,215,153))
 
 		frame = controller.frame()
-		no_prev_OK = False
 
 		if phase == 1:
 			if not no_prev_OK:
@@ -64,7 +66,7 @@ def main():
 			player.draw(DISPLAYSURF)
 			#We have to make the OK gesture to continue
 			for hand in frame.hands:
-				if detectOKGesture(hand,10)  and noprevOK:
+				if detectOKGesture(hand,10)  and no_prev_OK:
 					phase += 1
 		elif phase == 2:
 			rungestureimage.draw(DISPLAYSURF)
@@ -85,6 +87,7 @@ def main():
 			DISPLAYSURF.blit(jump_text, (60, 0, 30, 30))
 			player.update()
 			player.draw(DISPLAYSURF)
+			jumpgestureimage.draw(DISPLAYSURF)
 			if drawCoin:
 				coin.draw(DISPLAYSURF)
 
