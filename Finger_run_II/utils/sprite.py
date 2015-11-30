@@ -237,7 +237,7 @@ class Cursor(Sprite):
 		for hand in frame.hands:
 			cursor_pos = hand.palm_position
 			cursor_x = cursor_pos[0] * 4 + 300    #Adjustment to match the screen
-			cursor_y = -cursor_pos[1] * 2 + 500
+			cursor_y = -cursor_pos[1] * 4 + 1000
 
 		for hand in frame.hands:
 			if detectOKGesture(hand, 10):
