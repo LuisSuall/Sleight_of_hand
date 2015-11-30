@@ -150,6 +150,8 @@ def main(arguments):
 	level2_button = Button('images/button.png',(220,110,200,80),"LEVEL 2",play2)
 	level3_button = Button('images/button.png',(220,200,200,80),"LEVEL 3",play3)
 
+	okgestureimage = Sprite("images/okgesture.png",(350,200,290,280))
+
 	initial_buttons.append(title)
 	initial_buttons.append(tutorial_button)
 	initial_buttons.append(game_button)
@@ -159,22 +161,48 @@ def main(arguments):
 	game_buttons.append(level2_button)
 	game_buttons.append(level3_button)
 	game_buttons.append(back_button)
-	#game_buttons.append(exit_button)
+	game_buttons.append(exit_button)
 	
 	#Create menus
 	global initial_menu, game_menu
 	initial_menu = Menu(initial_buttons, "Initial menu")
 	game_menu = Menu(game_buttons, "Game menu", initial_menu)
 	
-	#The first menu is the initial menu
-	current_menu = initial_menu
+
+	#Title Screen
+
+	#Fill the screen
+	DISPLAYSURF.fill((221,215,153))
+
+	title.draw(DISPLAYSURF)
+
+	font = pygame.font.Font(None, 22)
+	text = font.render("Use your hand as a cursor, and do ok to select",0,(0,0,0))
+	DISPLAYSURF.blit(text, (10,350))
+	text = font.render("Ok to continue",0,(0,0,0))
+	DISPLAYSURF.blit(text, (10,375))
+
+	okgestureimage.draw(DISPLAYSURF)
 
 	#Update game screen
 	pygame.display.update()
-	# run the game loop
+	
+	ok_detected = False
 
+	while not ok_detected:
+		frame = controller.frame()
+
+		for hand in frame.hands:
+			if detectOKGesture(hand, 10):
+				ok_detected = True
+
+
+	#The first menu is the initial menu
+	current_menu = initial_menu
+
+	# run the game loop
 	while  True:
-		#Fill the screen with white
+		#Fill the screen
 		DISPLAYSURF.fill((221,215,153))
 		
 		#Check for QUIT method to close game
@@ -189,12 +217,11 @@ def main(arguments):
 		#Update cursor data
 		cursor.update(frame)
 		
-		#Draw Exit button and current menu buttons
-		exit_button.draw(DISPLAYSURF)
+		#Drawcurrent menu buttons
 		current_menu.draw(DISPLAYSURF, frame)
 		
 		#Check buttons clicked
-		cursor.collision(current_menu.buttons+[exit_button])
+		cursor.collision(current_menu.buttons)
 		
 		#Draw cursor
 		cursor.draw(DISPLAYSURF)
